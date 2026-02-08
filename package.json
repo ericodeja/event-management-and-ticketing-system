@@ -1,0 +1,30 @@
+{
+  "name": "event-management-and-ticketing-system",
+  "version": "1.0.0",
+  "description": "A backend event management and ticketing system built with Node.js and MongoDB, allowing organizers to create events, manage tickets, and handle registrations efficiently.",
+  "homepage": "https://github.com/ericodeja/event-management-and-ticketing-system#readme",
+  "bugs": {
+    "url": "https://github.com/ericodeja/event-management-and-ticketing-system/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ericodeja/event-management-and-ticketing-system.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.2.4",
+    "express": "^5.2.1",
+    "mongodb": "^7.1.0",
+    "mongoose": "^9.1.6",
+    "nodemon": "^3.1.11"
+  }
+}
