@@ -5,8 +5,7 @@ A backend event management and ticketing system built with Node.js and MongoDB, 
 Quick guide to get this backend running locally.
 ---
 
-## 1. Clone the Repo
-```bash
+## 1. Clone the repo
 git clone <repo_url>
 cd event-ticketing-backend
 
@@ -35,7 +34,7 @@ Server will run on http://localhost:8000.
 ## 5. Folder Structure Overview
 src/
 ├── src/server.js      # DB connection + start server
-├── src/pp.js         # Express app config
+├── src/app.js         # Express app config
 ├── src/db/            # MongoDB connection
 ├── controllers/   # Route handlers
 ├── models/        # DB schemas
