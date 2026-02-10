@@ -23,7 +23,7 @@ app.use(errorHandler)
 
 
 app.get("/", (req, res) => {
-  res.json({ message: "E-commerce API is running" });
+  res.json({ message: "API is running" });
 });
 
 startServer(app, PORT);
