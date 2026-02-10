@@ -3,6 +3,7 @@ import cors from 'cors'
 import "dotenv/config";
 import startServer from "./server.js";
 import errorHandler from "../middleware/error.js";
+import authRoutes from "./routes/auth.routes.js";
 
 const app = express();
 const PORT = process.env.PORT;
@@ -16,6 +17,7 @@ app.use(express.urlencoded({ extended: false }));
 
 
 //Routes
+app.use("/api/auth", authRoutes);
 
 
 //Error Handler
