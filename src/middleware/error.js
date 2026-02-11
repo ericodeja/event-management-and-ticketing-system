@@ -1,19 +1,7 @@
-const errorHandler = (error, req, res, next) => {
-  if (error.status) {
-    res.status(error.status).json({
-      error: {
-        message: error.message,
-      },
-    });
-  } else {
-    res.status(500).json({
-      error: {
-        message:
-          error.message ||
-          "An error occurred. Please view logs for more details",
-      },
-    });
-  }
-};
+export default function errorHandler(err, req, res, next) {
+  console.error("Error:", err);
 
-export default errorHandler;
+  res.status(err.status || 500).json({
+    message: err.message || "Internal Server Error",
+  });
+}

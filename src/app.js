@@ -4,6 +4,8 @@ import "dotenv/config";
 import startServer from "./server.js";
 import errorHandler from "./middleware/error.js";
 import eventRoutes from "./routes/event.js";
+import errorHandler from "../middleware/error.js";
+import authRoutes from "./routes/auth.routes.js";
 
 const app = express();
 const PORT = process.env.PORT;
@@ -16,6 +18,8 @@ app.use(express.urlencoded({ extended: false }));
 
 //Routes
 app.use("/api/event", eventRoutes);
+app.use("/api/auth", authRoutes);
+
 
 //Error Handler
 app.use(errorHandler);
