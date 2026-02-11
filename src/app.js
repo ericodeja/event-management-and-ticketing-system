@@ -2,8 +2,8 @@ import express from "express";
 import cors from "cors";
 import "dotenv/config";
 import startServer from "./server.js";
-import errorHandler from "../middleware/error.js";
-import eventRoutes from "../routes/event.js";
+import errorHandler from "./middleware/error.js";
+import eventRoutes from "./routes/event.js";
 
 const app = express();
 const PORT = process.env.PORT;

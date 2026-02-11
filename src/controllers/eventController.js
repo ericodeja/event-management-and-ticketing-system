@@ -195,5 +195,5 @@ export default {
   getEventById,
   updateEvent,
   publishEvent,
-  deleteEvent
+  deleteEvent,
 };
