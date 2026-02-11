@@ -5,9 +5,13 @@ async function startServer(app, PORT) {
   try {
     await connectDB();
 
-    const server = app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
+    // const server = app.listen(PORT, () => {
+    //   console.log(`Server running on port ${PORT}`);
+    // });
+    const server = app.listen(PORT, "127.0.0.1", () => {
+  console.log(`Server running at http://127.0.0.1:${PORT}`);
+});
+
 
     process.on("SIGTERM", async () => {
       console.log("SIGTERM received, shutting down gracefully");
