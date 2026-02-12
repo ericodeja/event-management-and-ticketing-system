@@ -32,15 +32,21 @@ npm run dev
 Server will run on http://localhost:8000.
 
 ## 5. Folder Structure Overview
-src/
-├── src/server.js      # DB connection + start server
-├── src/app.js         # Express app config
-├── src/db/            # MongoDB connection
-├── controllers/   # Route handlers
-├── models/        # DB schemas
-├── routes/        # API routes
-├── middleware/    # Auth, validation, error handling
-└── utils/         # Helpers (tokens, logging, etc)
+project-root/
+│
+├─ src/
+│   ├─ controllers/      # Handles business logic
+│   ├─ middleware/       # Auth, logging, error handling
+│   ├─ models/           # Mongoose schemas / database models
+│   ├─ routes/           # Express routers
+│   ├─ utils/            # Helper functions (logger, validators, etc.)
+│   ├─ db/               # Database connection
+│   ├─ app.js            # Main Express app
+│   └─ server.js         # Starts server, connects DB
+│
+├─ package.json
+├─ .env
+└─ README.md
 
 ## 6. Team Rules
 
