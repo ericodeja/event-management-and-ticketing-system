@@ -2,9 +2,8 @@ import express from "express";
 import cors from "cors";
 import "dotenv/config";
 import startServer from "./server.js";
-import errorHandler from "./middleware/error.js";
-import eventRoutes from "./routes/event.js";
-import errorHandler from "../middleware/error.js";
+import eventRoutes from "./routes/event.routes.js";
+import error from "./middleware/error.js";
 import authRoutes from "./routes/auth.routes.js";
 
 const app = express();
@@ -20,9 +19,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/api/event", eventRoutes);
 app.use("/api/auth", authRoutes);
 
-
 //Error Handler
-app.use(errorHandler);
+app.use(error);
 
 app.get("/", (req, res) => {
   res.json({ message: "API is running" });
