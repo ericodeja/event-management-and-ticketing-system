@@ -16,7 +16,12 @@ router.get("/all-events", auth, eventControllers.getEvent);
 
 router.get("/:id", auth, authorize("admin"), eventControllers.getEventById);
 
-router.put("/:id", auth, authorize("organizer"), eventControllers.updateEvent);
+router.put(
+  "/:id",
+  auth,
+  authorize("admin", "organizer"),
+  eventControllers.updateEvent,
+);
 
 router.put(
   "/:id/:action",

@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import Event from "../models/event.js";
-import mongoose from "mongoose";
 
 const createEvent = async (req, res, next) => {
   try {
