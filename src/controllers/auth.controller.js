@@ -1,4 +1,4 @@
-import User from "../models/User.js";
+import User from "../models/user.js";
 import crypto from "crypto";
 import { generateToken } from "../utils/token.js";
 import { sendEmail } from "../utils/mailer.js";
@@ -60,17 +60,19 @@ export const register = async (req, res) => {
         </div>
       </body>
       </html>
-    `
+    `,
   });
 
   res.status(201).json({
-    message: "Registration successful! Please check your email to verify your account.",
-    user: {
+    success: true,
+    message:
+      "Registration successful! Please check your email to verify your account.",
+    data: {
       id: user._id,
       name: user.name,
       email: user.email,
       role: user.role,
-    }
+    },
   });
 };
 
@@ -86,13 +88,17 @@ export const login = async (req, res) => {
   const token = generateToken(user);
 
   res.json({
-    token,
-    user: {
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-    }
+    success: true,
+    message: "Login successful",
+    data: {
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    },
   });
 };
 
@@ -102,20 +108,26 @@ export const verifyEmail = async (req, res) => {
     verificationToken: req.params.token,
   });
 
-  if (!user) return res.status(400).json({ message: "Invalid or expired verification token" });
+  if (!user)
+    return res
+      .status(400)
+      .json({ message: "Invalid or expired verification token" });
 
   user.isVerified = true;
   user.verificationToken = undefined;
   await user.save();
 
   res.json({
+    success: true,
     message: "Email verified successfully! You can now log in.",
-    user: {
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-    }
+    data: {
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    },
   });
 };
 
@@ -123,7 +135,11 @@ export const verifyEmail = async (req, res) => {
 export const forgotPassword = async (req, res) => {
   const user = await User.findOne({ email: req.body.email });
 
-  if (!user) return res.json({ message: "If your email exists in our system, you will receive a password reset link." });
+  if (!user)
+    return res.json({
+      message:
+        "If your email exists in our system, you will receive a password reset link.",
+    });
 
   const token = crypto.randomBytes(32).toString("hex");
 
@@ -174,11 +190,12 @@ export const forgotPassword = async (req, res) => {
         </div>
       </body>
       </html>
-    `
+    `,
   });
 
   res.json({
-    message: "If your email exists in our system, you will receive a password reset link."
+    message:
+      "If your email exists in our system, you will receive a password reset link.",
   });
 };
 
@@ -189,7 +206,8 @@ export const resetPassword = async (req, res) => {
     resetPasswordExpire: { $gt: Date.now() },
   });
 
-  if (!user) return res.status(400).json({ message: "Invalid or expired reset token" });
+  if (!user)
+    return res.status(400).json({ message: "Invalid or expired reset token" });
 
   user.password = req.body.password;
   user.resetPasswordToken = undefined;
@@ -198,7 +216,8 @@ export const resetPassword = async (req, res) => {
   await user.save();
 
   res.json({
-    message: "Password updated successfully! You can now log in with your new password."
+    message:
+      "Password updated successfully! You can now log in with your new password.",
   });
 };
 
@@ -206,6 +225,9 @@ export const resetPassword = async (req, res) => {
 export const profile = async (req, res) => {
   const { _id, name, email, role } = req.user;
   res.json({
-    user: { id: _id, name, email, role }
+    success: true,
+    data: {
+      user: { id: _id, name, email, role },
+    },
   });
 };

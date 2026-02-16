@@ -1,11 +1,20 @@
+import mongoose from "mongoose";
 import Event from "../models/event.js";
 import mongoose from "mongoose";
 
 const createEvent = async (req, res, next) => {
   try {
-    const { title, desc, date, venue } = req.body;
+    const { title, desc, date, venue, ticketPrice, ticketQuantityLimit } =
+      req.body;
 
-    if (!title || !desc || !date || !venue) {
+    if (
+      !title ||
+      !desc ||
+      !date ||
+      !venue ||
+      !ticketPrice ||
+      !ticketQuantityLimit
+    ) {
       const error = new Error("All fields are required");
       error.status = 400;
       return next(error);
@@ -17,6 +26,8 @@ const createEvent = async (req, res, next) => {
       date,
       venue,
       owner: req.user._id,
+      ticketPrice,
+      ticketQuantityLimit,
     });
 
     await event.save();
@@ -24,7 +35,8 @@ const createEvent = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
-      message: {
+      message: "User successfully created",
+      data: {
         event,
       },
     });
@@ -44,7 +56,7 @@ const getEvent = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: {
+      data: {
         events,
       },
     });
@@ -73,7 +85,7 @@ const getEventById = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: {
+      data: {
         event,
       },
     });
@@ -109,13 +121,16 @@ const updateEvent = async (req, res, next) => {
       return next(error);
     }
 
-    const { title, desc, date, venue } = req.body;
+    const { title, desc, date, venue, ticketPrice, ticketQuantityLimit } =
+      req.body;
 
     const filters = {};
     if (title) filters.title = title;
     if (desc) filters.desc = desc;
     if (date) filters.date = date;
     if (venue) filters.venue = venue;
+    if (ticketPrice) filters.ticketPrice = ticketPrice;
+    if (ticketQuantityLimit) filters.ticketQuantityLimit = ticketQuantityLimit;
 
     const updatedEvent = await Event.findByIdAndUpdate(
       { _id: eventId },

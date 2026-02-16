@@ -29,6 +29,18 @@ const eventSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    ticketPrice: {
+      type: Number,
+      required: true,
+    },
+    ticketQuantityLimit: {
+      type: Number,
+      required: true,
+    },
+    ticketSold: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true },
 );
