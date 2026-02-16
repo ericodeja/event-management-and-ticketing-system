@@ -9,20 +9,20 @@ const ticketSchema = new mongoose.Schema(
     },
     price: {
       type: Number,
-      required: true
+      required: true,
     },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    ticketCode: {
+    code: {
       type: String,
       unique: true,
     },
     status: {
       type: String,
-      enum: ["Valid", "Used", "Refunded", "Cancelled"],
+      enum: ["Valid", "Used", "Refunded", "Cancelled", "Used"],
       default: "Valid",
     },
   },
