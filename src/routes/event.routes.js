@@ -13,7 +13,7 @@ router.get("/:id", eventControllers.getEventById);
 
 router.put("/:id", eventControllers.updateEvent);
 
-router.put("/:id/:action", eventControllers.publishEvent);
+router.put("/:id/:action", eventControllers.updateStatus);
 
 router.delete("/:id", eventControllers.deleteEvent);
 

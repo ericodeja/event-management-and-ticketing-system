@@ -1,4 +1,5 @@
 import Event from "../models/event.js";
+import mongoose from "mongoose";
 
 const createEvent = async (req, res, next) => {
   try {
@@ -15,9 +16,11 @@ const createEvent = async (req, res, next) => {
       desc,
       date,
       venue,
+      owner: req.user._id,
     });
 
     await event.save();
+    await event.populate("owner", "name email");
 
     res.status(201).json({
       success: true,
@@ -82,6 +85,30 @@ const getEventById = async (req, res, next) => {
 const updateEvent = async (req, res, next) => {
   try {
     const eventId = req.params.id;
+
+    if (!mongoose.Types.ObjectId.isValid(eventId)) {
+      const error = new Error("Invalid event id");
+      error.status = 400;
+      return next(error);
+    }
+
+    const event = await Event.findById(eventId);
+
+    if (!event) {
+      const error = new Error("Event not found");
+      error.status = 404;
+      return next(error);
+    }
+
+    if (
+      req.user.role !== "admin" &&
+      event.owner.toString() !== req.user._id.toString()
+    ) {
+      const error = new Error("You are not allowed to edit this event");
+      error.status = 403;
+      return next(error);
+    }
+
     const { title, desc, date, venue } = req.body;
 
     const filters = {};
@@ -90,21 +117,17 @@ const updateEvent = async (req, res, next) => {
     if (date) filters.date = date;
     if (venue) filters.venue = venue;
 
-    if (!mongoose.Types.ObjectId.isValid(eventId)) {
-      const error = new Error("Invalid event id");
-      error.status = 400;
-      return next(error);
-    }
-
-    await Event.findByIdAndUpdate({ _id: eventId }, filters);
-
-    const event = await Event.findById(eventId);
+    const updatedEvent = await Event.findByIdAndUpdate(
+      { _id: eventId },
+      filters,
+      { new: true },
+    );
 
     res.status(200).json({
       success: true,
+      message: "Event updated successfully",
       data: {
-        message: "Event updated successfully",
-        event,
+        updatedEvent,
       },
     });
   } catch (err) {
@@ -112,7 +135,7 @@ const updateEvent = async (req, res, next) => {
   }
 };
 
-const publishEvent = async (req, res, next) => {
+const updateStatus = async (req, res, next) => {
   try {
     const eventId = req.params.id;
     const action = req.params.action;
@@ -123,23 +146,44 @@ const publishEvent = async (req, res, next) => {
       return next(error);
     }
 
+    const event = await Event.findById(eventId);
+
+    if (!event) {
+      const error = new Error("Event not found");
+      error.status = 404;
+      return next(error);
+    }
+
+    if (
+      req.user.role !== "admin" &&
+      event.owner.toString() !== req.user._id.toString()
+    ) {
+      const error = new Error("You are not allowed to edit this event");
+      error.status = 403;
+      return next(error);
+    }
+
     if (action !== "publish" && action !== "cancel") {
       const error = new Error("Invalid action");
       error.status = 400;
       return next(error);
     }
 
+    let updatedEvent;
+
     switch (action) {
       case "publish":
-        await Event.findByIdAndUpdate(
+        updatedEvent = await Event.findByIdAndUpdate(
           { _id: eventId },
           { status: "published" },
+          { new: true },
         );
         break;
       case "cancel":
-        await Event.findByIdAndUpdate(
+        updatedEvent = await Event.findByIdAndUpdate(
           { _id: eventId },
           { status: "cancelled" },
+          { new: true },
         );
         break;
 
@@ -149,13 +193,11 @@ const publishEvent = async (req, res, next) => {
         return next(error);
     }
 
-    const event = await Event.findById(eventId);
-
     res.status(200).json({
       success: true,
+      message: `Event ${action} successful`,
       data: {
-        message: `Event ${action} successful`,
-        event,
+        updatedEvent,
       },
     });
   } catch (err) {
@@ -170,6 +212,23 @@ const deleteEvent = async (req, res, next) => {
     if (!mongoose.Types.ObjectId.isValid(eventId)) {
       const error = new Error("Invalid event id");
       error.status = 400;
+      return next(error);
+    }
+
+    const event = await Event.findById(eventId);
+
+    if (!event) {
+      const error = new Error("Event not found");
+      error.status = 404;
+      return next(error);
+    }
+
+    if (
+      req.user.role !== "admin" &&
+      event.owner.toString() !== req.user._id.toString()
+    ) {
+      const error = new Error("You are not allowed to edit this event");
+      error.status = 403;
       return next(error);
     }
 
@@ -194,6 +253,6 @@ export default {
   getEvent,
   getEventById,
   updateEvent,
-  publishEvent,
+  updateStatus,
   deleteEvent,
 };
