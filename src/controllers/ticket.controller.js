@@ -31,9 +31,6 @@ const buyTicket = async (req, res, next) => {
     try {
       await ticket.save();
 
-      await ticket.populate("event", "title venue");
-      await ticket.populate("owner", "name email");
-
       await event.updateOne({ $inc: { ticketSold: 1 } });
 
       res.status(201).json({
