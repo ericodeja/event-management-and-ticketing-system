@@ -1,37 +1,48 @@
-const Ticket = require("../models/ticket");
-const TicketType = require("../models/tickettype");
-const crypto = require("crypto");
+import Ticket from "../models/ticket.js";
+import Event from "../models/event.js";
+import crypto from "crypto";
 
-exports.buyTicket = async (req, res) => {
+const buyTicket = async (req, res, next) => {
   try {
-    const { ticketTypeId } = req.body;
+    const event = await Event.findById(req.params.eventId);
 
-    const ticketType = await TicketType.findById(ticketTypeId);
-
-    if (!ticketType) {
-      return res.status(404).json({ message: "Ticket type not found" });
+    if (!event) {
+      const error = new Error("Invalid event id");
+      error.status = 403;
+      return next(error);
     }
 
-    if (ticketType.sold >= ticketType.quantityLimit) {
-      return res.status(400).json({ message: "Tickets sold out" });
+    if (event.ticketSold === event.ticketQuantityLimit) {
+      const error = new Error("Ticket is sold out");
+      error.status = 404;
+      return next(error);
     }
 
-    const ticket = await Ticket.create({
-      event: ticketType.event,
-      ticketType: ticketType._id,
-      owner: req.user.id,
+    const ticket = new Ticket({
+      event: event._id,
+      price: event.ticketPrice,
+      owner: req.user._id,
       ticketCode: crypto.randomBytes(6).toString("hex"),
     });
 
-    ticketType.sold += 1;
-    await ticketType.save();
+    try {
+      await ticket.save();
 
-    res.status(201).json({
-      message: "Ticket purchased successfully",
-      ticket,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+      await event.updateOne({ $inc: { ticketSold: 1 } });
+
+      res.status(201).json({
+        success: true,
+        message: "Ticket purchase successful",
+        data: {
+          ticket,
+        },
+      });
+    } catch (err) {
+      return next(`Ticket wasn't saved | ${err}`);
+    }
+  } catch (err) {
+    next(err);
   }
 };
 
+export default { buyTicket };

@@ -1,33 +1,30 @@
-const axios = require("axios");
-const Order = require("../models/Order");
+import axios from "axios";
+import Order from "../models/order.js";
 
-/**
- * 1️⃣ Initialize Payment
- */
-exports.initializePayment = async (req, res) => {
+
+const initializePayment = async (req, res, next) => {
   try {
     const { eventId, tickets, amount } = req.body;
 
-    // Generate unique reference manually
     const reference =
       "ORDER_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
 
-    // Create Order in DB
-    const order = await Order.create({
-      user: req.user.id, // from auth middleware
+    const order = new Order({
+      user: req.user._id,
       event: eventId,
       tickets,
       amount,
       reference,
-      status: "pending",
     });
 
-    // Call Paystack API
+    await order.save();
+
     const response = await axios.post(
       "https://api.paystack.co/transaction/initialize",
       {
         email: req.user.email,
-        amount: amount * 100, // Paystack uses kobo
+        amount: amount * 100,
+        channels: ['card', 'bank_transfer'],
         reference: reference,
         callback_url: "http://localhost:5000/payment/verify",
       },
@@ -36,28 +33,21 @@ exports.initializePayment = async (req, res) => {
           Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
           "Content-Type": "application/json",
         },
-      }
+      },
     );
 
     res.status(200).json({
       message: "Payment initialized",
-      paymentUrl: response.data.data.authorization_url,
+      paymentUrl: response.data.authorization_url,
       reference: reference,
     });
-
   } catch (error) {
-    console.error(error.response?.data || error.message);
-
-    res.status(500).json({
-      message: "Payment initialization failed",
-    });
+    const err = new Error(`Payment initialization failed || ${error}`);
+    next(err);
   }
 };
 
-/**
- * 2️⃣ Verify Payment (Callback)
- */
-exports.verifyPayment = async (req, res) => {
+const verifyPayment = async (req, res, next) => {
   try {
     const { reference } = req.query;
 
@@ -67,59 +57,45 @@ exports.verifyPayment = async (req, res) => {
         headers: {
           Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
         },
-      }
+      },
     );
 
-    const paystackData = response.data.data;
+    const paystackData = response.data;
 
-    if (paystackData.status === "success") {
-      await Order.findOneAndUpdate(
-        { reference },
-        { status: "paid" }
-      );
+    if (paystackData.status === true) {
+      await Order.findOneAndUpdate({ reference }, { status: "paid" });
 
       return res.status(200).json({
         message: "Payment successful",
       });
     } else {
-      await Order.findOneAndUpdate(
-        { reference },
-        { status: "failed" }
-      );
+      await Order.findOneAndUpdate({ reference }, { status: "failed" });
 
-      return res.status(400).json({
-        message: "Payment failed",
-      });
+      const error = new Error("Payment failed");
+      error.status = 400;
+      return next(error);
     }
-
   } catch (error) {
-    console.error(error.message);
-    res.status(500).json({
-      message: "Verification failed",
-    });
+    const err = new Error(`Verification failed|| ${error}`);
+    next(err);
   }
 };
 
-/**
- * 3️⃣ Webhook (For Automatic Confirmation)
- */
-exports.paystackWebhook = async (req, res) => {
+
+const paystackWebhook = async (req, res, next) => {
   try {
     const event = req.body;
 
     if (event.event === "charge.success") {
       const reference = event.data.reference;
 
-      await Order.findOneAndUpdate(
-        { reference },
-        { status: "paid" }
-      );
+      await Order.findOneAndUpdate({ reference }, { status: "paid" });
     }
 
     res.sendStatus(200);
-
   } catch (error) {
-    console.error(error.message);
-    res.sendStatus(500);
+    next(error);
   }
 };
+
+export default { initializePayment, verifyPayment, paystackWebhook };

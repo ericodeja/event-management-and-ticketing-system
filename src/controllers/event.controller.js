@@ -1,10 +1,19 @@
+import mongoose from "mongoose";
 import Event from "../models/event.js";
 
 const createEvent = async (req, res, next) => {
   try {
-    const { title, desc, date, venue } = req.body;
+    const { title, desc, date, venue, ticketPrice, ticketQuantityLimit } =
+      req.body;
 
-    if (!title || !desc || !date || !venue) {
+    if (
+      !title ||
+      !desc ||
+      !date ||
+      !venue ||
+      !ticketPrice ||
+      !ticketQuantityLimit
+    ) {
       const error = new Error("All fields are required");
       error.status = 400;
       return next(error);
@@ -15,13 +24,16 @@ const createEvent = async (req, res, next) => {
       desc,
       date,
       venue,
+      ticketPrice,
+      ticketQuantityLimit,
     });
 
     await event.save();
 
     res.status(201).json({
       success: true,
-      message: {
+      message: "User successfully created",
+      data: {
         event,
       },
     });
@@ -41,7 +53,7 @@ const getEvent = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: {
+      data: {
         events,
       },
     });
@@ -70,7 +82,7 @@ const getEventById = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: {
+      data: {
         event,
       },
     });
@@ -82,13 +94,16 @@ const getEventById = async (req, res, next) => {
 const updateEvent = async (req, res, next) => {
   try {
     const eventId = req.params.id;
-    const { title, desc, date, venue } = req.body;
+    const { title, desc, date, venue, ticketPrice, ticketQuantityLimit } =
+      req.body;
 
     const filters = {};
     if (title) filters.title = title;
     if (desc) filters.desc = desc;
     if (date) filters.date = date;
     if (venue) filters.venue = venue;
+    if (ticketPrice) filters.ticketPrice = ticketPrice;
+    if (ticketQuantityLimit) filters.ticketQuantityLimit = ticketQuantityLimit;
 
     if (!mongoose.Types.ObjectId.isValid(eventId)) {
       const error = new Error("Invalid event id");
@@ -102,8 +117,8 @@ const updateEvent = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
+      messsage: "Event updated successfully",
       data: {
-        message: "Event updated successfully",
         event,
       },
     });
@@ -153,8 +168,8 @@ const publishEvent = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
+      message: `Event ${action} successful`,
       data: {
-        message: `Event ${action} successful`,
         event,
       },
     });

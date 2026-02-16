@@ -24,6 +24,18 @@ const eventSchema = new mongoose.Schema(
       enum: ["draft", "published", "cancelled"],
       default: "draft",
     },
+    ticketPrice: {
+      type: Number,
+      required: true,
+    },
+    ticketQuantityLimit: {
+      type: Number,
+      required: true,
+    },
+    ticketSold: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true },
 );

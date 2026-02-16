@@ -1,10 +1,11 @@
-const express = require("express");
-const router = express.Router();
-const paymentController = require("../controllers/payment.controller");
-const authMiddleware = require("../middleware/auth");
+import express from "express";
+import paymentController from "../controllers/payment.controller.js";
+import auth from "../middleware/auth.js";
 
-router.post("/initialize", authMiddleware, paymentController.initializePayment);
+const router = express.Router();
+
+router.post("/initialize", auth, paymentController.initializePayment);
 router.get("/verify", paymentController.verifyPayment);
 router.post("/webhook", paymentController.paystackWebhook);
 
-module.exports = router;
+export default router;

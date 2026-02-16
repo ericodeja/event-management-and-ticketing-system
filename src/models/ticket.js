@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const ticketSchema = new mongoose.Schema(
   {
@@ -7,10 +7,9 @@ const ticketSchema = new mongoose.Schema(
       ref: "Event",
       required: true,
     },
-    ticketType: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "TicketType",
-      required: true,
+    price: {
+      type: Number,
+      required: true
     },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
@@ -27,7 +26,9 @@ const ticketSchema = new mongoose.Schema(
       default: "Valid",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-module.exports = mongoose.model("Ticket", ticketSchema);
+const Ticket = mongoose.model("Ticket", ticketSchema);
+
+export default Ticket;
