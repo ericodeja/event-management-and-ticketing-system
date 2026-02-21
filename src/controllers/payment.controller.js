@@ -1,20 +1,18 @@
-const axios = require("axios");
-const Order = require("../models/Order");
+import axios from "axios";
+import Order from "../models/Order.js";
 
 /**
  * 1️⃣ Initialize Payment
  */
-exports.initializePayment = async (req, res) => {
+const initializePayment = async (req, res) => {
   try {
     const { eventId, tickets, amount } = req.body;
 
-    // Generate unique reference manually
     const reference =
       "ORDER_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
 
-    // Create Order in DB
     const order = await Order.create({
-      user: req.user.id, // from auth middleware
+      user: req.user.id,
       event: eventId,
       tickets,
       amount,
@@ -22,13 +20,12 @@ exports.initializePayment = async (req, res) => {
       status: "pending",
     });
 
-    // Call Paystack API
     const response = await axios.post(
       "https://api.paystack.co/transaction/initialize",
       {
         email: req.user.email,
-        amount: amount * 100, // Paystack uses kobo
-        reference: reference,
+        amount: amount * 100,
+        reference,
         callback_url: "http://localhost:5000/payment/verify",
       },
       {
@@ -42,7 +39,7 @@ exports.initializePayment = async (req, res) => {
     res.status(200).json({
       message: "Payment initialized",
       paymentUrl: response.data.data.authorization_url,
-      reference: reference,
+      reference,
     });
 
   } catch (error) {
@@ -55,9 +52,9 @@ exports.initializePayment = async (req, res) => {
 };
 
 /**
- * 2️⃣ Verify Payment (Callback)
+ * 2️⃣ Verify Payment
  */
-exports.verifyPayment = async (req, res) => {
+const verifyPayment = async (req, res) => {
   try {
     const { reference } = req.query;
 
@@ -101,9 +98,9 @@ exports.verifyPayment = async (req, res) => {
 };
 
 /**
- * 3️⃣ Webhook (For Automatic Confirmation)
+ * 3️⃣ Webhook
  */
-exports.paystackWebhook = async (req, res) => {
+const paystackWebhook = async (req, res) => {
   try {
     const event = req.body;
 
@@ -122,4 +119,10 @@ exports.paystackWebhook = async (req, res) => {
     console.error(error.message);
     res.sendStatus(500);
   }
+};
+
+export default {
+  initializePayment,
+  verifyPayment,
+  paystackWebhook,
 };

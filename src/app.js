@@ -6,7 +6,7 @@ import eventRoutes from "./routes/event.routes.js";
 import error from "./middleware/error.js";
 import authRoutes from "./routes/auth.routes.js";
 import ticketRoutes from "./routes/ticket.routes.js";
-import paymentRoutes from "./routes/payment.routes.js"
+import paymentRoutes from "./routes/payment.routes.js";
 const app = express();
 const PORT = process.env.PORT;
 
