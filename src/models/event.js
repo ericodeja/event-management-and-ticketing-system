@@ -24,6 +24,23 @@ const eventSchema = new mongoose.Schema(
       enum: ["draft", "published", "cancelled"],
       default: "draft",
     },
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    ticketPrice: {
+      type: Number,
+      required: true,
+    },
+    ticketQuantityLimit: {
+      type: Number,
+      required: true,
+    },
+    ticketSold: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true },
 );

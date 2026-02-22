@@ -7,6 +7,11 @@ import error from "./middleware/error.js";
 import authRoutes from "./routes/auth.routes.js";
 import ticketRoutes from "./routes/ticket.routes.js";
 import paymentRoutes from "./routes/payment.routes.js";
+<<<<<<< HEAD
+=======
+import adminRoutes from "./routes/admin.routes.js";
+
+>>>>>>> origin
 const app = express();
 const PORT = process.env.PORT;
 
@@ -19,8 +24,9 @@ app.use(express.urlencoded({ extended: false }));
 //Routes
 app.use("/api/event", eventRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/tickets",ticketRoutes);
-app.use("/payment",paymentRoutes);
+app.use("/api/tickets", ticketRoutes);
+app.use("/payment", paymentRoutes);
+app.use("/api/admin-dashboard", adminRoutes);
 
 //Error Handler
 app.use(error);

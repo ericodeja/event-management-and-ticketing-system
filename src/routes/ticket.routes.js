@@ -1,8 +1,12 @@
-const express = require("express");
+import express from "express";
+import ticketController from "../controllers/ticket.controller.js";
+import auth from "../middleware/auth.js";
+import authorize from '../middleware/roles.js'
+
 const router = express.Router();
-const ticketController = require("../controllers/ticket.controller");
-const authMiddleware = require("../middleware/auth"); // adjust if different
 
-router.post("/buy", authMiddleware, ticketController.buyTicket);
+router.post("/buy/:eventId", auth, ticketController.buyTicket);
 
-module.exports = router;
+router.get("/verify", auth, authorize("admin"), ticketController.verifyTicket);
+
+export default router;

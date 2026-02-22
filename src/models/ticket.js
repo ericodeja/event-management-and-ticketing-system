@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const ticketSchema = new mongoose.Schema(
   {
@@ -7,9 +7,8 @@ const ticketSchema = new mongoose.Schema(
       ref: "Event",
       required: true,
     },
-    ticketType: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "TicketType",
+    price: {
+      type: Number,
       required: true,
     },
     owner: {
@@ -17,17 +16,19 @@ const ticketSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    ticketCode: {
+    code: {
       type: String,
       unique: true,
     },
     status: {
       type: String,
-      enum: ["Valid", "Used", "Refunded", "Cancelled"],
+      enum: ["Valid", "Used", "Refunded", "Cancelled", "Used"],
       default: "Valid",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-module.exports = mongoose.model("Ticket", ticketSchema);
+const Ticket = mongoose.model("Ticket", ticketSchema);
+
+export default Ticket;
