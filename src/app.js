@@ -7,19 +7,14 @@ import error from "./middleware/error.js";
 import authRoutes from "./routes/auth.routes.js";
 import ticketRoutes from "./routes/ticket.routes.js";
 import paymentRoutes from "./routes/payment.routes.js";
-<<<<<<< HEAD
-=======
 import adminRoutes from "./routes/admin.routes.js";
 
->>>>>>> origin
 const app = express();
 const PORT = process.env.PORT;
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
-//Logger
 
 //Routes
 app.use("/api/event", eventRoutes);

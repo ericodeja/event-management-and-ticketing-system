@@ -2,9 +2,7 @@ import axios from "axios";
 import Order from "../models/Order.js";
 
 
-/**
- * 1️⃣ Initialize Payment
- */
+
 const initializePayment = async (req, res) => {
   try {
     const { eventId, tickets, amount } = req.body;
@@ -52,9 +50,7 @@ const initializePayment = async (req, res) => {
   }
 };
 
-/**
- * 2️⃣ Verify Payment
- */
+
 const verifyPayment = async (req, res) => {
   try {
     const { reference } = req.query;
@@ -98,9 +94,7 @@ const verifyPayment = async (req, res) => {
   }
 };
 
-/**
- * 3️⃣ Webhook
- */
+
 const paystackWebhook = async (req, res) => {
   try {
     const event = req.body;
